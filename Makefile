@@ -10,12 +10,12 @@ install:
 
 lint:
 	cd $(WEB) && npm run lint
-	$(UV) run --project $(API) --locked ruff check $(API)/app $(API)/tests evals
-	$(UV) run --project $(API) --locked ruff format --check $(API)/app $(API)/tests evals
+	$(UV) run --project $(API) --locked ruff check $(API)/app $(API)/tests $(API)/alembic evals
+	$(UV) run --project $(API) --locked ruff format --check $(API)/app $(API)/tests $(API)/alembic evals
 
 typecheck:
 	cd $(WEB) && npm run typecheck
-	PYTHONPATH=$(API) $(UV) run --project $(API) --locked mypy --config-file $(API)/pyproject.toml $(API)/app
+	PYTHONPATH=$(API) $(UV) run --project $(API) --locked mypy --config-file $(API)/pyproject.toml $(API)/app $(API)/alembic
 
 test:
 	PYTHONPATH=$(API) $(UV) run --project $(API) --locked pytest $(API)/tests
