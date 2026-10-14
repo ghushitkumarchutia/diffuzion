@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     internal_auth_url: str = "http://web:3000/api/auth/get-session?disableCookieCache=true"
     session_days: int = Field(default=7, ge=1, le=7)
     auth_timeout_seconds: int = Field(default=5, ge=1, le=10)
+    upload_reservation_seconds: int = Field(default=600, ge=30, le=3600)
     storage_backend: Literal["local", "s3"] = "local"
     local_storage_path: Path = Path("private-uploads")
     bucket_name: str | None = None
