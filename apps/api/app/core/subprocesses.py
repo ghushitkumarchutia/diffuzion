@@ -7,6 +7,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from time import monotonic
+from typing import Literal
 
 from app.core.config import Settings
 from app.core.errors import DomainError
@@ -30,6 +31,7 @@ def run_bounded(
     *,
     allowed_executables: frozenset[Path],
     temp_root: Path | None = None,
+    memory_resource: Literal["address_space", "data"] = "address_space",
 ) -> ProcessResult:
     try:
         resolved = executable.resolve(strict=True)
@@ -37,14 +39,15 @@ def run_bounded(
         raise ProcessFailure("parser_start_failed") from None
     if not executable.is_absolute() or resolved not in allowed_executables:
         raise ValueError("Executable must be absolute and explicitly trusted")
-    command = [str(resolved), *arguments]
+    command = [str(executable), *arguments]
     if sys.platform == "linux":
         launcher = (
             "import os,resource,sys;"
             "limit=int(sys.argv[1]);"
-            "resource.setrlimit(resource.RLIMIT_AS,(limit,limit));"
+            "kind=resource.RLIMIT_AS if sys.argv[2]=='address_space' else resource.RLIMIT_DATA;"
+            "resource.setrlimit(kind,(limit,limit));"
             "resource.setrlimit(resource.RLIMIT_CORE,(0,0));"
-            "os.execv(sys.argv[2],sys.argv[2:])"
+            "os.execv(sys.argv[3],sys.argv[3:])"
         )
         command = [
             sys.executable,
@@ -52,6 +55,7 @@ def run_bounded(
             "-c",
             launcher,
             str(settings.parser_memory_bytes),
+            memory_resource,
             *command,
         ]
     with tempfile.TemporaryDirectory(prefix="diffuzion-", dir=temp_root) as directory:
@@ -99,6 +103,8 @@ def run_bounded(
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
+            except PermissionError:
+                process.kill()
             process.wait()
             if process.stdout:
                 process.stdout.close()

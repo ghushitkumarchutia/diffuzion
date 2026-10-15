@@ -312,3 +312,59 @@ class Export(AnalysisModel):
     versions: dict[str, Annotated[str, Field(min_length=1, max_length=100)]] = Field(max_length=20)
     evidence: list[Evidence] = Field(max_length=20000)
     reviews: list[Review] = Field(default_factory=list, max_length=600)
+
+
+class ParserLimits(AnalysisModel):
+    max_spec_bytes: int = Field(default=2097152, ge=1, le=2097152)
+    max_spec_operations: int = Field(default=100, ge=1, le=100)
+    max_code_bytes: int = Field(default=262144, ge=1, le=262144)
+    yaml_max_depth: int = Field(default=50, ge=1, le=100)
+    yaml_max_nodes: int = Field(default=20000, ge=1, le=100000)
+    yaml_max_aliases: int = Field(default=0, ge=0, le=0)
+    parser_output_bytes: int = Field(default=4194304, ge=1024, le=4194304)
+
+
+class Operation(AnalysisModel):
+    key: OperationKey
+    path: str = Field(max_length=2048)
+    method: str = Field(max_length=10)
+    json_pointer: str = Field(max_length=4000)
+    operation_id: str | None = Field(default=None, max_length=500)
+
+
+class ParsedSpec(AnalysisModel):
+    file_id: UUID
+    document: dict[str, object]
+    operations: dict[str, Operation] = Field(max_length=100)
+    api_base_url: BaseURL | None = None
+    warnings: list[str] = Field(default_factory=list, max_length=20)
+
+
+class ExtractionResult(AnalysisModel):
+    file_id: UUID
+    language: Language
+    callsites: list[CallSite] = Field(default_factory=list, max_length=10000)
+    errors: list[str] = Field(default_factory=list, max_length=20)
+    limitations: list[str] = Field(default_factory=list, max_length=20)
+
+
+class ParserTask(AnalysisModel):
+    kind: Literal["spec", "source"]
+    file_id: UUID
+    filename: str = Field(min_length=1, max_length=255)
+    content: str = Field(max_length=2097152)
+    spec_role: Literal["old_spec", "new_spec"] = "old_spec"
+    api_base_url_override: BaseURL | None = None
+    limits: ParserLimits = Field(default_factory=ParserLimits)
+
+
+class ParserResult(AnalysisModel):
+    spec: ParsedSpec | None = None
+    source: ExtractionResult | None = None
+    error: RunError | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_result(self) -> "ParserResult":
+        if sum(item is not None for item in (self.spec, self.source, self.error)) != 1:
+            raise ValueError("Parser result requires exactly one result or error")
+        return self
