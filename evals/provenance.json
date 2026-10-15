@@ -1,0 +1,46 @@
+{
+  "format_version": 1,
+  "split_policy": "One family record contains all translated variants; all twenty families belong only to development. No held-out fixtures exist yet.",
+  "authored": {
+    "id": "authored",
+    "author": "Diffuzion project",
+    "modifications": "All authored contracts, consumer variants and notes are synthetic."
+  },
+  "upstream": [
+    {
+      "id": "petstore",
+      "url": "https://github.com/swagger-api/swagger-petstore",
+      "commit": "d57941e8fe959e508796b27469b1e8bba73392dc",
+      "spec_path": "src/main/resources/openapi.yaml",
+      "excerpt_pointers": ["/paths/~1pet~1findByStatus/get"],
+      "internal_references": [
+        "#/components/schemas/Category",
+        "#/components/schemas/Pet",
+        "#/components/schemas/Tag"
+      ],
+      "license_path": "evals/licenses/swagger-petstore-LICENSE.txt",
+      "modifications": "New-contract operation removal or documentation update, consumers and notes are synthetic; retained upstream components are unchanged.",
+      "license_sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+    },
+    {
+      "id": "box",
+      "url": "https://github.com/box/box-openapi",
+      "commit": "38fa64be562acc8d5f48f76b43c13a86a0e89b21",
+      "spec_path": "openapi.json",
+      "excerpt_pointers": ["/paths/~1users~1me/get"],
+      "internal_references": [
+        "#/components/schemas/ClientError",
+        "#/components/schemas/TrackingCode",
+        "#/components/schemas/User",
+        "#/components/schemas/User--Base",
+        "#/components/schemas/User--Full",
+        "#/components/schemas/User--Mini"
+      ],
+      "license_path": "evals/licenses/box-openapi-LICENSE.txt",
+      "modifications": "New-contract operation removal or documentation update, consumers and notes are synthetic; retained upstream components are unchanged.",
+      "license_sha256": "c666b2511719a979ae3311021b97e0e8e0a16000946024e7262670dee0615144"
+    }
+  ],
+  "ai_spike_family_ids": ["dev-01", "dev-04", "dev-09", "dev-15", "dev-17"],
+  "ai_spike_status": "Selected for a future five-family AI spike; no provider execution or generated advice is included."
+}
