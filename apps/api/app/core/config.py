@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     chunker_version: str = "1"
     prompt_version: str = "1"
     parser_version: str = "1"
+    oasdiff_path: Path = Path("/usr/local/bin/oasdiff")
+    oasdiff_version: Literal["1.33.0"] = "1.33.0"
     chunk_tokens: int = Field(default=300, ge=1, le=1000)
     chunk_overlap_tokens: int = Field(default=40, ge=0, le=200)
     free_monthly_reports: int = Field(default=5, ge=1)
