@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: Diffuzion account demo
+  version: 1.0.0
+servers:
+  - url: https://api.diffuzion.example/v1
+paths:
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                    - active
+                    - paused
+              required:
+                - name
+      responses:
+        "201":
+          description: Created
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /legacy:
+    get:
+      responses:
+        "200":
+          description: Legacy summary
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        legacyCode:
+          type: string

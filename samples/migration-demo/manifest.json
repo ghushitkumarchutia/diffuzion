@@ -1,0 +1,49 @@
+{
+  "id": "migration-demo",
+  "synthetic": true,
+  "files": [
+    {
+      "path": "openapi-old.yaml",
+      "role": "old_spec"
+    },
+    {
+      "path": "openapi-new.yaml",
+      "role": "new_spec"
+    },
+    {
+      "path": "consumer.ts",
+      "role": "code",
+      "language": "typescript"
+    },
+    {
+      "path": "consumer.js",
+      "role": "code",
+      "language": "javascript"
+    },
+    {
+      "path": "consumer.py",
+      "role": "code",
+      "language": "python"
+    },
+    {
+      "path": "migration-notes.md",
+      "role": "note"
+    }
+  ],
+  "expected_changed_operations": [
+    "POST /users",
+    "GET /users/{id}",
+    "GET /legacy"
+  ],
+  "expected_dynamic_calls_per_language": 1,
+  "workflow": [
+    "import",
+    "preview",
+    "review mappings",
+    "select operations",
+    "generate guidance",
+    "review",
+    "export"
+  ],
+  "quota_policy": "Normal source allowance and analysis quota apply"
+}
