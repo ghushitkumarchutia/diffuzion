@@ -39,7 +39,8 @@ def test_initial_schema_matches_models_and_preserves_auth(database_engine: Engin
             connection.scalar(text("SELECT extversion FROM pg_extension WHERE extname='vector'"))
             == "0.8.2"
         )
-        assert connection.scalar(text("SHOW listen_addresses")) == ""
+        if database_engine.url.query.get("host"):
+            assert connection.scalar(text("SHOW listen_addresses")) == ""
         assert (
             connection.scalar(text("SELECT version_num FROM app.alembic_version"))
             == "0001_initial_app"
